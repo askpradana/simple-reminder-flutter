@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gaemcosign/cubit/notif_cubit.dart';
 import 'package:gaemcosign/homepage.dart';
+import 'package:gaemcosign/model/notif_adapter.dart';
+import 'package:gaemcosign/model/notif_model.dart';
 import 'package:gaemcosign/notification_setting.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -8,7 +12,9 @@ void main() async {
   NotificationService notificationService = NotificationService();
   await notificationService.initNotification();
   await Hive.initFlutter();
+  Hive.registerAdapter(NotificationModelAdapter());
   await Hive.openBox('reminder_box');
+  await Hive.openBox<NotificationModel>('notifications');
   runApp(const MyApp());
 }
 
@@ -17,9 +23,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomePage(),
+    return BlocProvider<NotifCubit>(
+      create: (context) => NotifCubit(),
+      child: const MaterialApp(
+        home: HomePage(),
+      ),
     );
   }
 }
