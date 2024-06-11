@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:gaemcosign/notification_setting.dart' as ns;
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gaemcosign/bloc/notification_bloc.dart';
+import 'package:gaemcosign/bloc/notification_event.dart';
+import 'package:gaemcosign/bloc/notification_state.dart';
+import 'package:gaemcosign/notification_setting.dart';
+
+import 'package:hive/hive.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,77 +15,40 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late ns.NotificationService notificationService;
+  late NotificationService notificationService;
+  late NotificationBloc notificationBloc;
 
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
-
-  List<ns.NotificationModel> _reminderItem = [];
-  final _reminderBox = Hive.box('reminder_box');
-
-  int notificationId = 1;
 
   TimeOfDay? tempPickedTime;
 
   @override
   void initState() {
     super.initState();
-    notificationService = ns.NotificationService();
+    notificationService = NotificationService();
     notificationService.initNotification();
-    _refreshItems();
+    notificationBloc =
+        NotificationBloc(notificationService, Hive.box('reminder_box'));
+    notificationBloc.add(LoadNotifications());
   }
 
-  void _refreshItems() {
-    List<ns.NotificationModel> data = _reminderBox.keys.map((key) {
-      final value = _reminderBox.get(key);
-      int hour = int.parse(value['time'].split(':')[0]);
-      int minute = int.parse(value['time'].split(':')[1].split(' ')[0]);
-      String period = value['time'].split(' ')[1];
-
-      if (period == 'PM' && hour != 12) {
-        hour += 12;
-      } else if (period == 'AM' && hour == 12) {
-        hour = 0;
-      }
-
-      return ns.NotificationModel(
-        key: key,
-        name: value["name"],
-        description: value['description'],
-        time: TimeOfDay(hour: hour, minute: minute),
-      );
-    }).toList();
-
-    setState(() {
-      _reminderItem = data.reversed.toList();
-    });
-  }
-
-  Future<void> _createItem(Map<String, dynamic> newItem) async {
-    await _reminderBox.add(newItem);
-    _refreshItems();
-  }
-
-  Future<void> _updateItem(int itemKey, Map<String, dynamic> item) async {
-    await _reminderBox.put(itemKey, item);
-    _refreshItems();
-  }
-
-  Future<void> _deleteItem(int itemKey) async {
-    await _reminderBox.delete(itemKey);
-    _refreshItems();
-
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Reminder deleted')));
+  @override
+  void dispose() {
+    titleController.dispose();
+    descController.dispose();
+    super.dispose();
   }
 
   void _showForm(BuildContext ctx, int? itemKey) async {
     if (itemKey != null) {
-      final existingItem =
-          _reminderItem.firstWhere((element) => element.key == itemKey);
-      titleController.text = existingItem.name;
-      descController.text = existingItem.description;
+      final state = notificationBloc.state;
+      if (state is NotificationLoaded) {
+        final existingItem =
+            state.notifications.firstWhere((element) => element.key == itemKey);
+        titleController.text = existingItem.name;
+        descController.text = existingItem.description;
+      }
     }
     showModalBottomSheet(
         context: ctx,
@@ -100,99 +68,72 @@ class _HomePageState extends State<HomePage> {
                     controller: titleController,
                     decoration: const InputDecoration(hintText: 'Name'),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   TextField(
                     controller: descController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(hintText: 'description'),
+                    decoration: const InputDecoration(hintText: 'Description'),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {
-                      _scheduleNotification(context).then((value) {
+                      final TimeOfDay? pickedTime = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                      );
+
+                      if (pickedTime != null) {
+                        tempPickedTime = pickedTime;
                         if (itemKey == null) {
-                          _createItem({
-                            "name": titleController.text,
-                            "description": descController.text,
-                            "time": tempPickedTime?.format(context)
-                          });
+                          notificationBloc.add(AddNotification(
+                            titleController.text,
+                            descController.text,
+                            tempPickedTime!,
+                          ));
+                        } else {
+                          notificationBloc.add(AddNotification(
+                            titleController.text,
+                            descController.text,
+                            tempPickedTime!,
+                          ));
                         }
-
-                        if (itemKey != null) {
-                          _updateItem(itemKey, {
-                            'name': titleController.text.trim(),
-                            'description': descController.text.trim()
-                          });
-                        }
-                      }).then((value) {
-                        titleController.text = '';
-                        descController.text = '';
-
-                        Navigator.pop(context);
-                      });
+                      }
+                      titleController.clear();
+                      descController.clear();
+                      Navigator.pop(context);
                     },
                     child: Text(itemKey == null ? 'Create New' : 'Update'),
                   ),
-                  const SizedBox(
-                    height: 15,
-                  )
+                  const SizedBox(height: 15)
                 ],
               ),
             ));
   }
 
-  showSnackbar(int hour, int minute) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Alarm set for: $hour:$minute'),
-        duration: const Duration(seconds: 4),
-      ),
-    );
-  }
-
-  Future<void> _scheduleNotification(BuildContext context) async {
-    final TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-
-    if (pickedTime != null) {
-      await notificationService.scheduleNotification(
-        id: notificationId,
-        title: titleController.text,
-        body: descController.text,
-        timeOfDay: TimeOfDay(hour: pickedTime.hour, minute: pickedTime.minute),
-      );
-      notificationId++;
-      tempPickedTime = pickedTime;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _reminderItem.isEmpty
-          ? const Center(
-              child: Text(
-                'No Data',
-                style: TextStyle(fontSize: 30),
-              ),
-            )
-          : ListView.builder(
-              itemCount: _reminderItem.length,
-              itemBuilder: (_, index) {
-                final currentItem = _reminderItem[index];
-                return Card(
-                  color: Colors.orange.shade100,
-                  margin: const EdgeInsets.all(10),
-                  elevation: 3,
-                  child: ListTile(
+      appBar: AppBar(
+        title: const Text('Scheduled Notifications'),
+      ),
+      body: BlocProvider(
+        create: (_) => notificationBloc,
+        child: BlocBuilder<NotificationBloc, NotificationState>(
+          builder: (context, state) {
+            if (state is NotificationLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is NotificationLoaded) {
+              return ListView.builder(
+                itemCount: state.notifications.length,
+                itemBuilder: (_, index) {
+                  final currentItem = state.notifications[index];
+                  return Card(
+                    color: Colors.orange.shade100,
+                    margin: const EdgeInsets.all(10),
+                    elevation: 3,
+                    child: ListTile(
                       title: Text(currentItem.name),
-                      subtitle: Text(currentItem.description.toString()),
+                      subtitle: Text(currentItem.description),
                       leading: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -201,17 +142,27 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () => _deleteItem(currentItem.key),
-                          ),
-                        ],
-                      )),
-                );
-              }),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () {
+                          notificationBloc
+                              .add(DeleteNotification(currentItem.key));
+                        },
+                      ),
+                    ),
+                  );
+                },
+              );
+            } else if (state is NotificationError) {
+              return Center(child: Text(state.message));
+            } else {
+              return const Center(
+                child: Text('No Data', style: TextStyle(fontSize: 30)),
+              );
+            }
+          },
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showForm(context, null),
         child: const Icon(Icons.add),
