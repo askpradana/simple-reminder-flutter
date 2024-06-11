@@ -84,17 +84,3 @@ class NotificationService {
     );
   }
 }
-
-class NotificationModel {
-  final dynamic key;
-  final String name;
-  final String description;
-  final TimeOfDay time;
-
-  NotificationModel({
-    required this.key,
-    required this.name,
-    required this.description,
-    required this.time,
-  });
-}

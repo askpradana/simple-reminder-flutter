@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gaemcosign/model/notif_model.dart';
 import 'package:gaemcosign/notification_setting.dart' as ns;
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -15,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
 
-  List<ns.NotificationModel> _reminderItem = [];
+  List<NotificationModel> _reminderItem = [];
   final _reminderBox = Hive.box('reminder_box');
 
   int notificationId = 1;
@@ -31,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _refreshItems() {
-    List<ns.NotificationModel> data = _reminderBox.keys.map((key) {
+    List<NotificationModel> data = _reminderBox.keys.map((key) {
       final value = _reminderBox.get(key);
       int hour = int.parse(value['time'].split(':')[0]);
       int minute = int.parse(value['time'].split(':')[1].split(' ')[0]);
@@ -43,7 +44,7 @@ class _HomePageState extends State<HomePage> {
         hour = 0;
       }
 
-      return ns.NotificationModel(
+      return NotificationModel(
         key: key,
         name: value["name"],
         description: value['description'],
@@ -79,8 +80,8 @@ class _HomePageState extends State<HomePage> {
     if (itemKey != null) {
       final existingItem =
           _reminderItem.firstWhere((element) => element.key == itemKey);
-      titleController.text = existingItem.name;
-      descController.text = existingItem.description;
+      titleController.text = existingItem.name!;
+      descController.text = existingItem.description!;
     }
     showModalBottomSheet(
         context: ctx,
@@ -191,13 +192,13 @@ class _HomePageState extends State<HomePage> {
                   margin: const EdgeInsets.all(10),
                   elevation: 3,
                   child: ListTile(
-                      title: Text(currentItem.name),
+                      title: Text(currentItem.name!),
                       subtitle: Text(currentItem.description.toString()),
                       leading: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            '${currentItem.time.hour.toString().padLeft(2, '0')}:${currentItem.time.minute.toString().padLeft(2, '0')}',
+                            '${currentItem.time!.hour.toString().padLeft(2, '0')}:${currentItem.time!.minute.toString().padLeft(2, '0')}',
                           ),
                         ],
                       ),
