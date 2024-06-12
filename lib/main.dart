@@ -4,7 +4,7 @@ import 'package:gameconsign/cubit/notif_cubit.dart';
 import 'package:gameconsign/pages/homepage.dart';
 import 'package:gameconsign/model/notif_adapter.dart';
 import 'package:gameconsign/model/notif_model.dart';
-import 'package:gameconsign/notification_setting.dart';
+import 'package:gameconsign/core/notification_setting.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {

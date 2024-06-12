@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -77,6 +79,8 @@ class NotificationService {
     return notificationsPlugin.zonedSchedule(
       id, title, body, nextScheduledDate, notificationDetails(),
       // androidAllowWhileIdle: true,
+      // * Got error on picking 'exact' picking inexact instead
+      // source : https://stackoverflow.com/a/78552200
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,

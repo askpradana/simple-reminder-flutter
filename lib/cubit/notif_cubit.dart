@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:gameconsign/model/notif_model.dart';
-import 'package:gameconsign/notification_setting.dart';
+import 'package:gameconsign/core/notification_setting.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 part 'notif_state.dart';
@@ -34,10 +34,6 @@ class NotifCubit extends Cubit<NotifState> {
   void deleteNotif(int key) async {
     await _notificationsBox.delete(key);
     NotificationService().cancelNotification(key);
-    emit(NotifInitial(notifications: _notificationsBox.values.toList()));
-  }
-
-  void refresh() {
     emit(NotifInitial(notifications: _notificationsBox.values.toList()));
   }
 }

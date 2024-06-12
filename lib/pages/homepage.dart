@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gameconsign/cubit/notif_cubit.dart';
 import 'package:gameconsign/model/notif_model.dart';
-import 'package:gameconsign/notification_setting.dart';
+import 'package:gameconsign/core/notification_setting.dart';
 import 'package:gameconsign/pages/detail_page.dart';
 import 'package:gameconsign/theme/color.dart';
 import 'package:gameconsign/theme/custom_text.dart';
