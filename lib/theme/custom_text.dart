@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:gaemcosign/theme/color.dart';
 
 class CustomText extends StatelessWidget {
-  const CustomText({super.key, required this.text, this.isBold = false});
+  const CustomText(
+      {super.key, required this.text, this.isBold = false, this.colour});
 
   final String text;
   final bool isBold;
+  final Color? colour;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
       style: TextStyle(
-        color: CustomColor.white,
+        color: colour ?? CustomColor.white,
         fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
       ),
     );

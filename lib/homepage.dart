@@ -5,6 +5,7 @@ import 'package:gaemcosign/model/notif_model.dart';
 import 'package:gaemcosign/notification_setting.dart';
 import 'package:gaemcosign/theme/color.dart';
 import 'package:gaemcosign/theme/custom_text.dart';
+import 'package:swipeable_tile/swipeable_tile.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
@@ -47,37 +48,84 @@ class HomePage extends StatelessWidget {
   Widget _buildBody(
       List<NotificationModel> notifications, BuildContext context) {
     if (notifications.isEmpty) {
-      return const Center(child: Text('It`s empty'));
+      return const Center(
+        child: CustomText(text: 'It`s empty 👀'),
+      );
     }
 
     return ListView.builder(
       itemCount: notifications.length,
       itemBuilder: (context, index) {
         final notification = notifications[index];
-        return ListTile(
-          leading: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CustomText(
-                text: '${notification.time!.hour}:${notification.time!.minute}',
-              )
-            ],
-          ),
-          title: CustomText(
-            text: notification.name!,
-            isBold: true,
-          ),
-          subtitle: CustomText(
-            text: notification.description!,
-          ),
-          trailing: IconButton(
-            icon: const Icon(
-              Icons.done,
-              color: CustomColor.white,
+        return SwipeableTile(
+          key: UniqueKey(),
+          color: CustomColor.primary,
+          direction: SwipeDirection.horizontal,
+          onSwiped: (direction) {
+            context.read<NotifCubit>().deleteNotif(notification.key);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                backgroundColor: CustomColor.white,
+                content: Text(
+                  'Deleted 👍',
+                  style: TextStyle(
+                    color: CustomColor.black,
+                  ),
+                ),
+                duration: Duration(seconds: 1),
+              ),
+            );
+          },
+          backgroundBuilder: (context, direction, progress) {
+            if (direction == SwipeDirection.endToStart) {
+              return Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20.0),
+                color: Colors.red,
+                child: const Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
+              );
+            } else if (direction == SwipeDirection.startToEnd) {
+              return Container(
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20.0),
+                color: Colors.red,
+                child: const Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
+              );
+            }
+            return Container();
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            child: ListTile(
+              leading: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomText(
+                    text:
+                        '${notification.time!.hour.toString().padLeft(2, '0')}:${notification.time!.minute.toString().padLeft(2, '0')}',
+                    colour: CustomColor.onPrimary,
+                  ),
+                ],
+              ),
+              title: CustomText(
+                text: notification.name!,
+                isBold: true,
+                colour: CustomColor.onPrimary,
+              ),
+              subtitle: notification.description != null &&
+                      notification.description!.isNotEmpty
+                  ? CustomText(
+                      text: notification.description!,
+                      colour: CustomColor.onPrimary,
+                    )
+                  : null,
             ),
-            onPressed: () {
-              context.read<NotifCubit>().deleteNotif(notification.key);
-            },
           ),
         );
       },
@@ -98,6 +146,8 @@ class HomePage extends StatelessWidget {
         timeOfDay: TimeOfDay(hour: pickedTime.hour, minute: pickedTime.minute),
       );
       return pickedTime;
+    } else {
+      return null;
     }
   }
 
@@ -124,7 +174,7 @@ class HomePage extends StatelessWidget {
                             const BorderSide(color: CustomColor.background),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      hintText: 'Name',
+                      hintText: 'Reminder Title',
                       border: const OutlineInputBorder(),
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 12, horizontal: 16),
@@ -140,7 +190,7 @@ class HomePage extends StatelessWidget {
                             const BorderSide(color: CustomColor.background),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      hintText: 'Description',
+                      hintText: 'Reminder Description',
                       border: const OutlineInputBorder(),
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 12, horizontal: 16),
@@ -149,10 +199,42 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {
+                      if (titleController.text.isEmpty) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: CustomColor.white,
+                            content: Text(
+                              'Hey! at least put some effort to write title 🫠',
+                              style: TextStyle(
+                                color: CustomColor.black,
+                              ),
+                            ),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                        return;
+                      }
                       var uniqueKey =
                           context.read<NotifCubit>().generateUniqueKey();
 
                       _scheduleNotification(context, uniqueKey).then((value) {
+                        if (value == null) {
+                          // Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              backgroundColor: CustomColor.white,
+                              content: Text(
+                                'Forget to set time❓',
+                                style: TextStyle(
+                                  color: CustomColor.black,
+                                ),
+                              ),
+                              duration: Duration(seconds: 1),
+                            ),
+                          );
+                          return;
+                        }
                         // add to hive
                         context.read<NotifCubit>().addNotif(
                               NotificationModel(
@@ -167,6 +249,19 @@ class HomePage extends StatelessWidget {
                         // clear form
                         titleController.text = '';
                         descController.text = '';
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: CustomColor.white,
+                            content: Text(
+                              'Ok, I`ll remind you 👋, swipe to cancel',
+                              style: TextStyle(
+                                color: CustomColor.black,
+                              ),
+                            ),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
 
                         // close modal
                         Navigator.pop(context);
