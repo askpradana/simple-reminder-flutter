@@ -22,7 +22,10 @@ class HomePage extends StatelessWidget {
         if (state is NotifInitial) {
           return Scaffold(
             backgroundColor: CustomColor.background,
-            body: _buildBody(state.notifications, context),
+            body: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: _buildBody(state.notifications, context),
+            ),
             floatingActionButton: FloatingActionButton(
               backgroundColor: CustomColor.white,
               onPressed: () {
