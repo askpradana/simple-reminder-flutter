@@ -112,7 +112,7 @@ class HomePage extends StatelessWidget {
                 } else if (direction == SwipeDirection.startToEnd) {
                   return Container(
                     alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.only(right: 20.0),
+                    padding: const EdgeInsets.only(left: 20.0),
                     color: Colors.red,
                     child: const Icon(
                       Icons.delete,
