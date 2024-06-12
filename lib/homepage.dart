@@ -66,7 +66,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Future<void> _scheduleNotification(BuildContext context, dynamic id) async {
+  _scheduleNotification(BuildContext context, dynamic id) async {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -79,6 +79,7 @@ class HomePage extends StatelessWidget {
         body: descController.text,
         timeOfDay: TimeOfDay(hour: pickedTime.hour, minute: pickedTime.minute),
       );
+      return pickedTime;
     }
   }
 
@@ -120,7 +121,8 @@ class HomePage extends StatelessWidget {
                                 key: uniqueKey,
                                 name: titleController.text,
                                 description: descController.text,
-                                time: TimeOfDay.now(),
+                                // Edit this
+                                time: value,
                               ),
                             );
                       }).then((value) {
