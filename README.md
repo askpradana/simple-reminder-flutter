@@ -21,18 +21,6 @@ This Flutter application is a simple reminder app that uses notifications for bo
 ## Summary
 This application is a simple reminder app that allows users to create, view, and delete reminders. 
 
-#### The app features:
-
-Home Page: Displays a list of reminders with options to add new reminders and delete existing ones.
-
-Detail Page: Used for adding or editing reminders. (Editing coming soon)
-
-Notifications: Sends notifications to remind users of their tasks, working in both foreground and background.
-
-State Management: Uses Cubit Bloc for managing the application's state.
-
-Data Management: Uses Hive for local storage of reminders.
-
 
 ## Getting Started
 Clone the repository:
