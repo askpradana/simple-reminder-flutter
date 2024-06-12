@@ -13,7 +13,7 @@ class NotificationService {
     tz.initializeTimeZones();
 
     AndroidInitializationSettings initializationSettingsAndroid =
-        const AndroidInitializationSettings('flutter_logo');
+        const AndroidInitializationSettings('@mipmap/ic_launcher');
 
     var initializationSettingsIOS = DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -77,7 +77,7 @@ class NotificationService {
     return notificationsPlugin.zonedSchedule(
       id, title, body, nextScheduledDate, notificationDetails(),
       // androidAllowWhileIdle: true,
-      androidScheduleMode: AndroidScheduleMode.alarmClock,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
