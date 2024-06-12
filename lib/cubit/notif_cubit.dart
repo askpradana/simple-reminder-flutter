@@ -1,13 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:gaemcosign/model/notif_model.dart';
+import 'package:gaemcosign/notification_setting.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 part 'notif_state.dart';
 
-class NotifCubit extends Cubit<NotifInitial> {
+class NotifCubit extends Cubit<NotifState> {
   late final Box<NotificationModel> _notificationsBox;
 
-  NotifCubit() : super(NotifInitial(notifications: [])) {
+  NotifCubit() : super(NotifLoading()) {
     _initializeBox();
   }
 
@@ -16,13 +17,27 @@ class NotifCubit extends Cubit<NotifInitial> {
     emit(NotifInitial(notifications: _notificationsBox.values.toList()));
   }
 
-  void addNotif(NotificationModel model) {
-    _notificationsBox.put(model.key, model);
+  int generateUniqueKey() {
+    final currentKeys = _notificationsBox.keys.cast<int>();
+    if (currentKeys.isEmpty) {
+      return 0;
+    } else {
+      return currentKeys.reduce((a, b) => a > b ? a : b) + 1;
+    }
+  }
+
+  void addNotif(NotificationModel model) async {
+    await _notificationsBox.put(model.key, model);
     emit(NotifInitial(notifications: _notificationsBox.values.toList()));
   }
 
-  void deleteNotif() {
-    _notificationsBox.clear();
+  void deleteNotif(int key) async {
+    await _notificationsBox.delete(key);
+    NotificationService().cancelNotification(key);
+    emit(NotifInitial(notifications: _notificationsBox.values.toList()));
+  }
+
+  void refresh() {
     emit(NotifInitial(notifications: _notificationsBox.values.toList()));
   }
 }

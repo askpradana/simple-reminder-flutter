@@ -1,7 +1,11 @@
 part of 'notif_cubit.dart';
 
-class NotifInitial {
-  final List<NotificationModel>? notifications;
+abstract class NotifState {}
 
-  NotifInitial({this.notifications});
+class NotifInitial extends NotifState {
+  final List<NotificationModel> notifications;
+
+  NotifInitial({required this.notifications});
 }
+
+class NotifLoading extends NotifState {}

@@ -13,7 +13,6 @@ void main() async {
   await notificationService.initNotification();
   await Hive.initFlutter();
   Hive.registerAdapter(NotificationModelAdapter());
-  await Hive.openBox('reminder_box');
   await Hive.openBox<NotificationModel>('notifications');
   runApp(const MyApp());
 }
@@ -25,7 +24,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<NotifCubit>(
       create: (context) => NotifCubit(),
-      child: const MaterialApp(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: HomePage(),
       ),
     );

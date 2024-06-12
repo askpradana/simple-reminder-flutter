@@ -83,4 +83,8 @@ class NotificationService {
       matchDateTimeComponents: DateTimeComponents.time,
     );
   }
+
+  Future<void> cancelNotification(int id) async {
+    return notificationsPlugin.cancel(id);
+  }
 }
