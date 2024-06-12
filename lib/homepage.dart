@@ -54,80 +54,118 @@ class HomePage extends StatelessWidget {
     }
 
     return ListView.builder(
-      itemCount: notifications.length,
+      itemCount: notifications.length + 1,
       itemBuilder: (context, index) {
-        final notification = notifications[index];
-        return SwipeableTile(
-          key: UniqueKey(),
-          color: CustomColor.primary,
-          direction: SwipeDirection.horizontal,
-          onSwiped: (direction) {
-            context.read<NotifCubit>().deleteNotif(notification.key);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                backgroundColor: CustomColor.white,
-                content: Text(
-                  'Deleted 👍',
+        if (index == 0) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 32),
+            child: Column(
+              children: const [
+                Text(
+                  'Hello John! 👋',
                   style: TextStyle(
-                    color: CustomColor.black,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                duration: Duration(seconds: 1),
-              ),
-            );
-          },
-          backgroundBuilder: (context, direction, progress) {
-            if (direction == SwipeDirection.endToStart) {
-              return Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 20.0),
-                color: Colors.red,
-                child: const Icon(
-                  Icons.delete,
-                  color: Colors.white,
+                Text(
+                  'What You want to do today? 🤔',
+                  style: TextStyle(fontSize: 18),
                 ),
-              );
-            } else if (direction == SwipeDirection.startToEnd) {
-              return Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 20.0),
-                color: Colors.red,
-                child: const Icon(
-                  Icons.delete,
-                  color: Colors.white,
+              ],
+            ),
+          );
+        } else {
+          final notification = notifications[index - 1];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: SwipeableTile(
+              key: UniqueKey(),
+              color: CustomColor.primary,
+              direction: SwipeDirection.horizontal,
+              onSwiped: (direction) {
+                context.read<NotifCubit>().deleteNotif(notification.key);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    backgroundColor: CustomColor.white,
+                    content: Text(
+                      'Deleted 👍',
+                      style: TextStyle(
+                        color: CustomColor.black,
+                      ),
+                    ),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+              },
+              backgroundBuilder: (context, direction, progress) {
+                if (direction == SwipeDirection.endToStart) {
+                  return Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20.0),
+                    color: Colors.red,
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                  );
+                } else if (direction == SwipeDirection.startToEnd) {
+                  return Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.only(right: 20.0),
+                    color: Colors.red,
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                  );
+                }
+                return Container();
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 4,
+                  horizontal: 8,
                 ),
-              );
-            }
-            return Container();
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-            child: ListTile(
-              leading: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomText(
-                    text:
-                        '${notification.time!.hour.toString().padLeft(2, '0')}:${notification.time!.minute.toString().padLeft(2, '0')}',
+                decoration: BoxDecoration(
+                  color: CustomColor.primary,
+                  boxShadow: [
+                    BoxShadow(
+                      color: CustomColor.primary.withOpacity(0.5),
+                      spreadRadius: 5,
+                      blurRadius: 2,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: ListTile(
+                  leading: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CustomText(
+                        text:
+                            '${notification.time!.hour.toString().padLeft(2, '0')}:${notification.time!.minute.toString().padLeft(2, '0')}',
+                        colour: CustomColor.onPrimary,
+                      ),
+                    ],
+                  ),
+                  title: CustomText(
+                    text: notification.name!,
+                    isBold: true,
                     colour: CustomColor.onPrimary,
                   ),
-                ],
+                  subtitle: notification.description != null &&
+                          notification.description!.isNotEmpty
+                      ? CustomText(
+                          text: notification.description!,
+                          colour: CustomColor.onPrimary,
+                        )
+                      : null,
+                ),
               ),
-              title: CustomText(
-                text: notification.name!,
-                isBold: true,
-                colour: CustomColor.onPrimary,
-              ),
-              subtitle: notification.description != null &&
-                      notification.description!.isNotEmpty
-                  ? CustomText(
-                      text: notification.description!,
-                      colour: CustomColor.onPrimary,
-                    )
-                  : null,
             ),
-          ),
-        );
+          );
+        }
       },
     );
   }
@@ -273,6 +311,7 @@ class HomePage extends StatelessWidget {
                     ),
                     child: const CustomText(
                       text: 'Create New',
+                      colour: CustomColor.onPrimary,
                     ),
                   ),
                   const SizedBox(height: 15)
