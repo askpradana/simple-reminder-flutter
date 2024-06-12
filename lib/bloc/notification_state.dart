@@ -1,4 +1,4 @@
-import 'package:gaemcosign/notification_setting.dart';
+import 'package:gaemcosign/model/notif_model.dart';
 
 abstract class NotificationState {}
 
