@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gaemcosign/cubit/notif_cubit.dart';
 import 'package:gaemcosign/model/notif_model.dart';
 import 'package:gaemcosign/notification_setting.dart';
+import 'package:gaemcosign/theme/color.dart';
+import 'package:gaemcosign/theme/custom_text.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
@@ -18,18 +20,24 @@ class HomePage extends StatelessWidget {
       builder: (context, state) {
         if (state is NotifInitial) {
           return Scaffold(
+            backgroundColor: CustomColor.background,
             body: _buildBody(state.notifications, context),
             floatingActionButton: FloatingActionButton(
+              backgroundColor: CustomColor.white,
               onPressed: () {
                 _showAddNotificationModal(context);
               },
-              child: const Icon(Icons.add),
+              child: const Icon(
+                Icons.add,
+                color: CustomColor.black,
+              ),
             ),
           );
         } else {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Notifications')),
-            body: const Center(child: CircularProgressIndicator()),
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
           );
         }
       },
@@ -50,13 +58,23 @@ class HomePage extends StatelessWidget {
           leading: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('${notification.time!.hour}:${notification.time!.minute}'),
+              CustomText(
+                text: '${notification.time!.hour}:${notification.time!.minute}',
+              )
             ],
           ),
-          title: Text(notification.name!),
-          subtitle: Text(notification.description!),
+          title: CustomText(
+            text: notification.name!,
+            isBold: true,
+          ),
+          subtitle: CustomText(
+            text: notification.description!,
+          ),
           trailing: IconButton(
-            icon: const Icon(Icons.done),
+            icon: const Icon(
+              Icons.done,
+              color: CustomColor.white,
+            ),
             onPressed: () {
               context.read<NotifCubit>().deleteNotif(notification.key);
             },
@@ -100,13 +118,33 @@ class HomePage extends StatelessWidget {
                 children: [
                   TextField(
                     controller: titleController,
-                    decoration: const InputDecoration(hintText: 'Name'),
+                    decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            const BorderSide(color: CustomColor.background),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      hintText: 'Name',
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 16),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   TextField(
                     controller: descController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(hintText: 'Description'),
+                    decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            const BorderSide(color: CustomColor.background),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      hintText: 'Description',
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 16),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
@@ -134,7 +172,13 @@ class HomePage extends StatelessWidget {
                         Navigator.pop(context);
                       });
                     },
-                    child: const Text('Create New'),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(CustomColor.background),
+                    ),
+                    child: const CustomText(
+                      text: 'Create New',
+                    ),
                   ),
                   const SizedBox(height: 15)
                 ],
