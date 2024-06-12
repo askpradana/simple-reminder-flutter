@@ -1,4 +1,4 @@
-package com.example.gaemcosign
+package com.example.gameconsign
 
 import io.flutter.embedding.android.FlutterActivity
 

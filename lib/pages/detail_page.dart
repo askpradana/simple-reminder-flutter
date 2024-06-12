@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gaemcosign/cubit/notif_cubit.dart';
-import 'package:gaemcosign/theme/color.dart';
+import 'package:gameconsign/cubit/notif_cubit.dart';
+import 'package:gameconsign/theme/color.dart';
 
 class DetailPage extends StatelessWidget {
   const DetailPage({

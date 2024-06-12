@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:gaemcosign/model/notif_model.dart';
-import 'package:gaemcosign/notification_setting.dart';
+import 'package:gameconsign/model/notif_model.dart';
+import 'package:gameconsign/notification_setting.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 part 'notif_state.dart';

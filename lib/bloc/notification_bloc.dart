@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:gaemcosign/bloc/notification_event.dart';
-import 'package:gaemcosign/bloc/notification_state.dart';
-import 'package:gaemcosign/model/notif_model.dart';
-import 'package:gaemcosign/notification_setting.dart';
+import 'package:gameconsign/bloc/notification_event.dart';
+import 'package:gameconsign/bloc/notification_state.dart';
+import 'package:gameconsign/model/notif_model.dart';
+import 'package:gameconsign/notification_setting.dart';
 import 'package:hive/hive.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {

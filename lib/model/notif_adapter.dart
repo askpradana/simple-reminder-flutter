@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gaemcosign/model/notif_model.dart';
+import 'package:gameconsign/model/notif_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class NotificationModelAdapter extends TypeAdapter<NotificationModel> {

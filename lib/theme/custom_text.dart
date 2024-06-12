@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gaemcosign/theme/color.dart';
+import 'package:gameconsign/theme/color.dart';
 
 class CustomText extends StatelessWidget {
   const CustomText(
