@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gaemcosign/cubit/notif_cubit.dart';
 import 'package:gaemcosign/theme/color.dart';
 
 class DetailPage extends StatelessWidget {
@@ -7,17 +9,34 @@ class DetailPage extends StatelessWidget {
     required this.title,
     required this.description,
     required this.time,
+    this.notifKey,
   });
 
   final String title;
   final String description;
   final String time;
+  final dynamic notifKey;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {},
+          onPressed: () {
+            context.read<NotifCubit>().deleteNotif(notifKey);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                backgroundColor: CustomColor.black,
+                content: Text(
+                  'Nice 🎉',
+                  style: TextStyle(
+                    color: CustomColor.white,
+                  ),
+                ),
+                duration: Duration(seconds: 1),
+              ),
+            );
+            Navigator.pop(context);
+          },
           elevation: 0,
           backgroundColor: CustomColor.black,
           label: const Text('Mark as completed'),

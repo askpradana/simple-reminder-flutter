@@ -53,7 +53,10 @@ class HomePage extends StatelessWidget {
       List<NotificationModel> notifications, BuildContext context) {
     if (notifications.isEmpty) {
       return const Center(
-        child: CustomText(text: 'It`s empty 👀'),
+        child: CustomText(
+          text: 'It`s empty 👀',
+          colour: CustomColor.black,
+        ),
       );
     }
 
@@ -91,11 +94,11 @@ class HomePage extends StatelessWidget {
                 context.read<NotifCubit>().deleteNotif(notification.key);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    backgroundColor: CustomColor.white,
+                    backgroundColor: CustomColor.black,
                     content: Text(
                       'Deleted 👍',
                       style: TextStyle(
-                        color: CustomColor.black,
+                        color: CustomColor.white,
                       ),
                     ),
                     duration: Duration(seconds: 1),
@@ -152,6 +155,7 @@ class HomePage extends StatelessWidget {
                             notification.description ?? 'Add a description',
                         time:
                             '${notification.time!.hour.toString().padLeft(2, '0')}:${notification.time!.minute.toString().padLeft(2, '0')}',
+                        notifKey: notification.key,
                       ),
                     ),
                   ),
