@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gaemcosign/cubit/notif_cubit.dart';
-import 'package:gaemcosign/homepage.dart';
+import 'package:gaemcosign/pages/homepage.dart';
 import 'package:gaemcosign/model/notif_adapter.dart';
 import 'package:gaemcosign/model/notif_model.dart';
 import 'package:gaemcosign/notification_setting.dart';

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gaemcosign/cubit/notif_cubit.dart';
 import 'package:gaemcosign/model/notif_model.dart';
 import 'package:gaemcosign/notification_setting.dart';
+import 'package:gaemcosign/pages/detail_page.dart';
 import 'package:gaemcosign/theme/color.dart';
 import 'package:gaemcosign/theme/custom_text.dart';
 import 'package:swipeable_tile/swipeable_tile.dart';
@@ -141,29 +142,43 @@ class HomePage extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: ListTile(
-                  leading: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CustomText(
-                        text:
+                child: GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DetailPage(
+                        title: notification.name!,
+                        description:
+                            notification.description ?? 'Add a description',
+                        time:
                             '${notification.time!.hour.toString().padLeft(2, '0')}:${notification.time!.minute.toString().padLeft(2, '0')}',
-                        colour: CustomColor.onPrimary,
                       ),
-                    ],
+                    ),
                   ),
-                  title: CustomText(
-                    text: notification.name!,
-                    isBold: true,
-                    colour: CustomColor.onPrimary,
-                  ),
-                  subtitle: notification.description != null &&
-                          notification.description!.isNotEmpty
-                      ? CustomText(
-                          text: notification.description!,
+                  child: ListTile(
+                    leading: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CustomText(
+                          text:
+                              '${notification.time!.hour.toString().padLeft(2, '0')}:${notification.time!.minute.toString().padLeft(2, '0')}',
                           colour: CustomColor.onPrimary,
-                        )
-                      : null,
+                        ),
+                      ],
+                    ),
+                    title: CustomText(
+                      text: notification.name!,
+                      isBold: true,
+                      colour: CustomColor.onPrimary,
+                    ),
+                    subtitle: notification.description != null &&
+                            notification.description!.isNotEmpty
+                        ? CustomText(
+                            text: notification.description!,
+                            colour: CustomColor.onPrimary,
+                          )
+                        : null,
+                  ),
                 ),
               ),
             ),
@@ -310,11 +325,11 @@ class HomePage extends StatelessWidget {
                     },
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all(CustomColor.background),
+                          MaterialStateProperty.all(CustomColor.black),
                     ),
                     child: const CustomText(
                       text: 'Create New',
-                      colour: CustomColor.onPrimary,
+                      colour: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 15)
